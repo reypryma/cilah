@@ -79,7 +79,7 @@ class User_model extends CI_Model
 		/*	$this->db->where(['username'=>$username,
 							'password' => $password]);*/
 		$this->db->where('username', $username);
-		//$this->db->where('password', $password);
+		$this->db->where('password', $password);
 		///I think better to bring the pass from registration
 
 		$result = $this->db->get('users');
