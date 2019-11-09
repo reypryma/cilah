@@ -65,6 +65,7 @@ class Users extends CI_Controller
 			$this->load->view('layouts/main',$data);
 		}else{
 			if($this->user_model->create_user()){
+				$this->session->set_flashdata('user_registered', 'User now registered!');
 				redirect('home/index');
 			}else{
 
