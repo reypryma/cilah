@@ -1,0 +1,65 @@
+first view create data to pass to controller, using form_input, etc to pass, and submit as final passer
+
+		$data = array(
+			'class' => 'form-control',
+			'name' => 'confirm_password',
+			'placeholder' => 'Confirm Password'
+		)
+		?>
+		<?php echo form_password($data) ?>
+
+		<?php echo form_submit($data) ?>
+
+check if its exist in user_model
+------------------------
+	public function login_user($username, $password)
+	{
+		$this->db->where('username', $username);
+		$this->db->where('password', $password);
+		///I think better to bring the pass from registration
+
+		$result = $this->db->get('users');
+
+		if ($result->num_rows() == 1) {
+			return $result->row(0)->id;
+			//return first column
+		} else {
+			return false;
+		}
+	}
+
+Create function (will be sub-url)
+-----------------------
+			$username = $this->input->post('username');
+			$password = $this->input->post('password');
+
+			$user_id = $this->user_model->login_user($username,$password);
+			//we using logged_in to block some unregistered user to access specific page #BLOCKIT
+			if ($user_id){
+				$user_data = array(
+					'user_id' => $user_id,
+					'username' => $username,
+					'logged_in' => true
+				);
+				$this->session->set_userdata($user_data);
+				$this->session->set_flashdata('login_success', 'You are logged');
+				//redirect('home/index');
+				$data['main_view'] = "admin_view";
+				$this->load->view('layouts/main',$data);
+			}else{
+				$this->session->set_flashdata('login_failed', 'login failed');
+				redirect('home/index');
+			}
+		}
+
+now session set to $userdata, now to block access
+
+	public function __construct(){
+		//block access
+		parent::__construct();
+		if (!$this->session->userdata('logged_in')){
+			//home_view
+			$this->session->set_flashdata('no_access',"Sorry you are not logged in");
+			redirect( 'home');
+		}
+	}
